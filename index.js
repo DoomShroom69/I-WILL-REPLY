@@ -5,9 +5,9 @@ import OpenAI from "openai";
 // Khởi tạo Discord client
 const client = new Client({
   intents: [
-    GatewayIntentBits.Guilds,             // Cho phép bot kết nối server
-    GatewayIntentBits.GuildMessages,      // Đọc tin nhắn trong server
-    GatewayIntentBits.MessageContent      // Đọc nội dung tin nhắn
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
   ],
 });
 
@@ -23,8 +23,30 @@ client.on("ready", () => {
 
 // Khi có tin nhắn mới
 client.on("messageCreate", async (message) => {
-  // Bỏ qua tin nhắn của bot
-  if (message.author.bot) return;
+  if (message.author.bot) return; // bỏ qua tin nhắn từ bot
 
-  // Lệnh bắt đầu bằng !ask
-  if (
+  if (message.content.startsWith("!ask")) {
+    const prompt = message.content.replace("!ask", "").trim();
+
+    if (!prompt) {
+      return message.reply("👉 Hãy nhập câu hỏi sau lệnh `!ask`");
+    }
+
+    try {
+      // Gửi câu hỏi đến ChatGPT
+      const response = await openai.chat.completions.create({
+        model: "gpt-3.5-turbo",
+        messages: [{ role: "user", content: prompt }],
+      });
+
+      const reply = response.choices[0].message.content;
+      message.reply(reply);
+    } catch (err) {
+      console.error("❌ Lỗi:", err);
+      message.reply("⚠️ Có lỗi khi gọi ChatGPT!");
+    }
+  }
+});
+
+// Đăng nhập Discord bot
+client.login(process.env.DISCORD_TOKEN);
