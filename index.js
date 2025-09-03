@@ -50,3 +50,23 @@ client.on("messageCreate", async (message) => {
 
 // Đăng nhập Discord bot
 client.login(process.env.DISCORD_TOKEN);
+import { Client, GatewayIntentBits } from "discord.js";
+import OpenAI from "openai";
+
+// Debug: In ra trạng thái secrets (ẩn bớt cho an toàn)
+console.log("🔑 DISCORD_TOKEN tồn tại?", !!process.env.DISCORD_TOKEN);
+console.log("🔑 OPENAI_API_KEY tồn tại?", !!process.env.OPENAI_API_KEY);
+
+// Khởi tạo Discord client
+const client = new Client({
+  intents: [
+    GatewayIntentBits.Guilds,
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.MessageContent
+  ],
+});
+
+// Kết nối OpenAI bằng API key
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
